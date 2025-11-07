@@ -54,7 +54,7 @@ This project demonstrates Java concepts such as **OOP, Exception Handling, File 
        ┌──────────────────────────┐
        │   Admin / Result Viewer   │
        └──────────────────────────┘
-   ![System Architecture]("C:\Users\amudi\Downloads\_ AI Studios Prompt___Create a clean and professional system architecture diagram for an Online Voting System project.__The diagram should clearly show the main components and their interactions___User (Voter) on t.jpg")    
+       
 ---
 
 ## ⚙️ Technologies Used
