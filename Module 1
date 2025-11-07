@@ -1,0 +1,49 @@
+package Mini_projects;
+
+// Unit I: Paradigms & Basic Constructs
+abstract class User {
+    protected String userId;
+    protected String password;
+
+    public User(String userId, String password) {
+        this.userId = userId;
+        this.password = password;
+    }
+
+    public abstract void displayRole();
+}
+
+class Voter extends User {
+    private String name;
+
+    public Voter(String userId, String password, String name) {
+        super(userId, password);
+        this.name = name;
+    }
+
+    @Override
+    public void displayRole() {
+        System.out.println("Voter: " + name);
+    }
+}
+
+class Admin extends User {
+
+    public Admin(String userId, String password) {
+        super(userId, password);
+    }
+
+    @Override
+    public void displayRole() {
+        System.out.println("Admin: " + userId);
+    }
+}
+
+public class mod1 {
+    public static void main(String[] args) {
+        Voter v = new Voter("v101", "pass123", "Alice");
+        Admin a = new Admin("admin01", "admin123");
+        v.displayRole();
+        a.displayRole();
+    }
+}
