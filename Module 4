@@ -1,0 +1,65 @@
+package Mini_projects;
+
+import java.sql.*;
+import java.util.ArrayList;
+
+public class mod4 {
+
+    // ✅ MySQL connection details
+    private static final String URL = "jdbc:mysql://localhost:3306/votingdb";
+    private static final String USER = "root";         // your MySQL username
+    private static final String PASS = "Amudiesh22@."; // your MySQL password
+
+    // ✅ Inner class for each candidate
+    public static class Candidate {
+        public String name;
+        public String party;
+
+        public Candidate(String name, String party) {
+            this.name = name;
+            this.party = party;
+        }
+
+        @Override
+        public String toString() {
+            return name + " (" + party + ")";
+        }
+    }
+
+    // ✅ Fetch all candidates from the database
+    public ArrayList<Candidate> getCandidates() {
+        ArrayList<Candidate> list = new ArrayList<>();
+        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+             Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT name, party FROM candidates")) {
+
+            while (rs.next()) {
+                list.add(new Candidate(rs.getString("name"), rs.getString("party")));
+            }
+
+        } catch (SQLException e) {
+            System.out.println("❌ Database error: " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    // ✅ MAIN METHOD — run as Java application
+    public static void main(String[] args) {
+        mod4 db = new mod4();
+
+        System.out.println("🗳️ Fetching candidates from database...");
+        ArrayList<Candidate> candidates = db.getCandidates();
+
+        if (candidates.isEmpty()) {
+            System.out.println("❌ No candidates found in the database.");
+            return;
+        }
+
+        System.out.println("✅ Candidates:");
+        for (Candidate c : candidates) {
+            System.out.println(" - " + c.name + " (" + c.party + ")");
+        }
+    }
+}
