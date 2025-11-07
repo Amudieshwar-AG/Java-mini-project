@@ -54,6 +54,12 @@ This project demonstrates Java concepts such as **OOP, Exception Handling, File 
        ┌──────────────────────────┐
        │   Admin / Result Viewer   │
        └──────────────────────────┘
+       ## 🧱 System Architecture
+
+Below is the system architecture of the **Online Voting System**, showing the interaction between the user interface, backend, and database components.
+
+![System Architecture](architecture-diagram.jpg)
+
        
 ---
 
