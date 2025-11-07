@@ -1,0 +1,45 @@
+package Mini_projects;
+
+import java.util.*;
+import java.util.concurrent.*;
+
+// Unit III: Generics & Multi-threading
+class VotingSystem<T> {
+    private final Map<T, Integer> votes = new ConcurrentHashMap<>();
+
+    public void addCandidate(T candidate) {
+        votes.put(candidate, 0);
+    }
+
+    public synchronized void castVote(T candidate) {
+        votes.put(candidate, votes.get(candidate) + 1);
+    }
+
+    public void displayResults() {
+        System.out.println("Voting Results:");
+        for (Map.Entry<T, Integer> entry : votes.entrySet()) {
+            System.out.println(entry.getKey() + " -> " + entry.getValue() + " votes");
+        }
+    }
+}
+
+public class mod3 {
+    public static void main(String[] args) throws InterruptedException {
+        VotingSystem<String> votingSystem = new VotingSystem<>();
+        votingSystem.addCandidate("John");
+        votingSystem.addCandidate("Emma");
+
+        Runnable voter1 = () -> votingSystem.castVote("John");
+        Runnable voter2 = () -> votingSystem.castVote("Emma");
+
+        Thread t1 = new Thread(voter1);
+        Thread t2 = new Thread(voter2);
+
+        t1.start();
+        t2.start();
+        t1.join();
+        t2.join();
+
+        votingSystem.displayResults();
+    }
+}
