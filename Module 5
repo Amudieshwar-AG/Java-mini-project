@@ -1,0 +1,111 @@
+package app;
+
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import Mini_projects.mod4;
+import java.util.ArrayList;
+import java.sql.*;
+
+public class mod5 extends Application {
+
+    // ✅ Database connection details
+    private static final String URL = "jdbc:mysql://localhost:3306/votingdb";
+    private static final String USER = "root";
+    private static final String PASS = "Amudiesh22@.";
+
+    @Override
+    public void start(Stage stage) {
+        // --- Login UI ---
+        Label userLabel = new Label("Username:");
+        TextField username = new TextField();
+
+        Label passLabel = new Label("Password:");
+        PasswordField password = new PasswordField();
+
+        Button loginBtn = new Button("Login");
+        TextArea output = new TextArea();
+        output.setEditable(false);
+
+        VBox loginLayout = new VBox(10, userLabel, username, passLabel, password, loginBtn, output);
+        loginLayout.setStyle("-fx-padding: 20; -fx-font-size: 14;");
+        Scene loginScene = new Scene(loginLayout, 400, 400);
+
+        stage.setScene(loginScene);
+        stage.setTitle("Online Voting System");
+        stage.show();
+
+        // --- Login button logic ---
+        loginBtn.setOnAction(e -> {
+            String user = username.getText().trim();
+            if (user.isEmpty()) {
+                output.setText("Please enter your username!");
+                return;
+            }
+
+            // ✅ Fetch candidates from mod4
+            mod4 db = new mod4();
+            ArrayList<mod4.Candidate> candidates = db.getCandidates();
+
+            if (candidates.isEmpty()) {
+                output.setText("No candidates found in the database!");
+                return;
+            }
+
+            // --- Voting Screen ---
+            Label welcome = new Label("Welcome, " + user + "! Please cast your vote below:");
+            ComboBox<String> candidateBox = new ComboBox<>();
+
+            // Add candidate names to dropdown
+            for (mod4.Candidate c : candidates) {
+                candidateBox.getItems().add(c.name + " (" + c.party + ")");
+            }
+
+            Button voteBtn = new Button("Vote");
+            Label result = new Label();
+
+            voteBtn.setOnAction(ev -> {
+                String selected = candidateBox.getValue();
+                if (selected == null) {
+                    result.setText("Please select a candidate!");
+                    return;
+                }
+
+                // Extract only candidate name from "name (party)"
+                String candidateName = selected.split(" ")[0];
+
+                // ✅ Record vote in SQL
+                boolean success = recordVote(candidateName);
+                if (success)
+                    result.setText("✅ Vote recorded successfully for " + selected + "!");
+                else
+                    result.setText("❌ Failed to record vote. Try again.");
+            });
+
+            VBox voteLayout = new VBox(10, welcome, candidateBox, voteBtn, result);
+            voteLayout.setStyle("-fx-padding: 20; -fx-font-size: 14;");
+            stage.setScene(new Scene(voteLayout, 400, 300));
+        });
+    }
+
+    // ✅ Method to update vote count in SQL
+    private boolean recordVote(String candidateName) {
+        try (Connection con = DriverManager.getConnection(URL, USER, PASS)) {
+            PreparedStatement ps = con.prepareStatement(
+                "UPDATE candidates SET votes = votes + 1 WHERE name = ?"
+            );
+            ps.setString(1, candidateName);
+            int rows = ps.executeUpdate();
+            return rows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
