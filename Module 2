@@ -1,0 +1,57 @@
+package Mini_projects;
+
+import java.io.*;
+import java.util.*;
+
+// Unit II: Exception Handling & Streams
+class InvalidElectionException extends Exception {
+    public InvalidElectionException(String message) {
+        super(message);
+    }
+}
+
+public class mod2 {
+    private List<String> candidates = new ArrayList<>();
+
+    public void addCandidate(String name) throws InvalidElectionException {
+        if (name == null || name.isEmpty()) {
+            throw new InvalidElectionException("Candidate name cannot be empty!");
+        }
+        candidates.add(name);
+    }
+
+    public void saveElectionToFile(String fileName) throws IOException {
+        try (FileOutputStream fos = new FileOutputStream(fileName);
+             ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+            oos.writeObject(candidates);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void loadElectionFromFile(String fileName) throws IOException, ClassNotFoundException {
+        try (FileInputStream fis = new FileInputStream(fileName);
+             ObjectInputStream ois = new ObjectInputStream(fis)) {
+            candidates = (List<String>) ois.readObject();
+        }
+    }
+
+    public void displayCandidates() {
+        System.out.println("Candidates:");
+        for (String c : candidates) {
+            System.out.println("- " + c);
+        }
+    }
+
+    public static void main(String[] args) {
+        try {
+            mod2 esm = new mod2();
+            esm.addCandidate("John");
+            esm.addCandidate("Emma");
+            esm.saveElectionToFile("election.dat");
+            esm.loadElectionFromFile("election.dat");
+            esm.displayCandidates();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+}
